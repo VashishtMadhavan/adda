@@ -67,6 +67,35 @@ class Cityscapes(DatasetGroup):
             self.val = SegmentationDataset(val_images, val_labels,
                                         shuffle=self.shuffle)
 
+@register_dataset('gta')
+class GTA(DatasetGroup):
+    num_classes = 19
+    ignore_labels = [255]
+
+    def __init__(self, path=None, shuffle=True, download=False,
+                 half_crop=False):
+        DatasetGroup.__init__(self, 'gta', path=path, download=download)
+        self.shuffle = shuffle
+        self.half_crop = half_crop
+        self._read_datasets()
+
+    def _read_datasets(self):
+        with open(self.get_path('train_image.txt'), 'r') as f:
+            train_images = list(self.get_path(line.strip()) for line in f)
+        with open(self.get_path('train_label.txt'), 'r') as f:
+            train_labels = list(self.get_path(line.strip()) for line in f)
+        with open(self.get_path('val_image.txt'), 'r') as f:
+            val_images = list(self.get_path(line.strip()) for line in f)
+        with open(self.get_path('val_label.txt'), 'r') as f:
+            val_labels = list(self.get_path(line.strip()) for line in f)
+
+        if self.half_crop:
+            self.train = HalfCropDataset(train_images, train_labels, shuffle=self.shuffle)
+            self.val = HalfCropDataset(val_images, val_labels, shuffle=self.shuffle)
+        else:
+            self.train = SegmentationDataset(train_images, train_labels, shuffle=self.shuffle)
+            self.val = SegmentationDataset(val_images, val_labels, shuffle=self.shuffle)
+
 
 class HalfCropDataset(object):
 
