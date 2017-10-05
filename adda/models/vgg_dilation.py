@@ -47,7 +47,7 @@ def vgg_16_dilation_fcn(inputs,
                  num_classes=19,
                  is_training=True,
                  dropout_keep_prob=0.5,
-                 scope='vgg_16_fcn8s'):
+                 scope='vgg_16_dilation_fcn'):
     """Dilation Net VGG 16-Layers version D Example.
 
     Note: All the fully_connected layers have been transformed to conv2d layers.
@@ -73,10 +73,9 @@ def vgg_16_dilation_fcn(inputs,
         cm.enter_context(slim.arg_scope(
             [slim.conv2d, slim.fully_connected, slim.max_pool2d],
             outputs_collections=end_points_collection))
-        net = slim.repeat(inputs, 2, slim.conv2d, 64, [3, 3], scope='conv1')
-        #net = tf.pad(net, [[0, 0], [100, 100], [100, 100], [0, 0]])
-        #net = slim.conv2d(net, 64, 3, padding='VALID', scope='conv1/conv1_1')
-        #net = slim.conv2d(net, 64, 3, scope='conv1/conv1_2')
+        net = tf.pad(net, [[0, 0], [100, 100], [100, 100], [0, 0]])
+        net = slim.conv2d(net, 64, 3, padding='VALID', scope='conv1/conv1_1')
+        net = slim.conv2d(net, 64, 3, scope='conv1/conv1_2')
         net = slim.max_pool2d(net, [2, 2], scope='pool1')
         net = slim.repeat(net, 2, slim.conv2d, 128, [3, 3], scope='conv2')
         net = slim.max_pool2d(net, [2, 2], scope='pool2')
@@ -113,6 +112,13 @@ vgg_16_dilation_fcn.default_image_size = None  # fully convolutional
 vgg_16_dilation_fcn.num_channels = 3
 vgg_16_dilation_fcn.mean = np.array([123.68, 116.779, 103.939], dtype=np.float32)
 vgg_16_dilation_fcn.bgr = False
+
+# these needed to be set together
+vgg_16_dilation_fcn.crop = True
+vgg_16_dilation_fcn.crop_size = 500
+
+vgg_16_dilation_fcn.mirror = True
+
 
 
 @click.command()

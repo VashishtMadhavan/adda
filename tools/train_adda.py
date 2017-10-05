@@ -102,6 +102,8 @@ def main(source, target, model, output,
     adversary_loss = tf.losses.sparse_softmax_cross_entropy(
         adversary_label, adversary_logits)
 
+    #Todo: Add some kind of supervisory loss to target signal
+
     # variable collection
     source_vars = adda.util.collect_vars('source')
     target_vars = adda.util.collect_vars('target')

@@ -19,7 +19,7 @@ def register_model_fn(name):
 def get_model_fn(name):
     return models[name]
 
-def preprocessing(inputs, model_fn):
+def preprocessing(inputs, model_fn, labels=None):
     inputs = tf.cast(inputs, tf.float32)
     channels = inputs.get_shape()[2]
     if channels == 1 and model_fn.num_channels == 3:
@@ -41,6 +41,17 @@ def preprocessing(inputs, model_fn):
     if model_fn.bgr:
         logging.info('Performing BGR transposition.')
         inputs = inputs[:, :, [2, 1, 0]]
+
+    # random crop functionality
+    if model_fn.crop is not None:
+        logging.info("Performing random cropping")
+        inputs = tf.random_crop(inputs, [model_fn.crop_size, model_fn.crop_size, 3])
+
+    # random mirror functionality
+    if model_fn.mirror is not None:
+        logging.info("Performing random mirroring")
+        inputs = tf.image.random_flip_left_right(inputs)
+
     return inputs
 
 RGB2GRAY = np.array([0.2989, 0.5870, 0.1140], dtype=np.float32)

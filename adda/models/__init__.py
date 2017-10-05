@@ -6,3 +6,4 @@ from adda.models.model import register_model_fn
 from adda.models import lenet
 from adda.models import svhnnet
 from adda.models import vgg_16_fcn8s
+from adda.models import vgg_dilation

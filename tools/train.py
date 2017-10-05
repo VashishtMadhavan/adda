@@ -4,12 +4,13 @@ import random
 import sys
 from collections import deque
 from collections import OrderedDict
+from tqdm import tqdm
+
 
 import click
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib import slim
-from tqdm import tqdm
 
 import adda
 
@@ -51,7 +52,12 @@ def main(dataset, split, model, output, gpu, iterations, batch_size, display,
     dataset = getattr(adda.data.get_dataset(dataset), split)
     model_fn = adda.models.get_model_fn(model)
     im, label = dataset.tf_ops()
-    im = adda.models.preprocessing(im, model_fn)
+
+    if model not in ['gta', 'cityscapes']:
+        im = adda.models.preprocessing(im, model_fn)
+    else:
+        im = adda.models.preprocessing(im, model_fn, labels=label)
+        
     im_batch, label_batch = tf.train.batch([im, label], batch_size=batch_size)
     net, layers = model_fn(im_batch)
     if ignore_label is not None:
