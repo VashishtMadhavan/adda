@@ -1,11 +1,11 @@
 import tensorflow as tf
+import random
 
 from adda.data.dataset import DatasetGroup
 from adda.data.dataset import register_dataset
 
 
 class SegmentationDataset(object):
-
     def __init__(self, images, labels, shuffle=True):
         self.images = images
         self.labels = labels
@@ -36,7 +36,6 @@ class SegmentationDataset(object):
 
 @register_dataset('cityscapes')
 class Cityscapes(DatasetGroup):
-
     num_classes = 19
     ignore_labels = [255]
 
@@ -49,23 +48,20 @@ class Cityscapes(DatasetGroup):
 
     def _read_datasets(self):
         with open(self.get_path('train_image_rel.txt'), 'r') as f:
-            train_images = list(self.get_path(line.strip()) for line in f)
+            train_images = list(line.strip() for line in f)
         with open(self.get_path('train_label_rel.txt'), 'r') as f:
-            train_labels = list(self.get_path(line.strip()) for line in f)
+            train_labels = list(line.strip() for line in f)
         with open(self.get_path('val_image_rel.txt'), 'r') as f:
-            val_images = list(self.get_path(line.strip()) for line in f)
+            val_images = list(line.strip() for line in f)
         with open(self.get_path('val_label_rel.txt'), 'r') as f:
-            val_labels = list(self.get_path(line.strip()) for line in f)
+            val_labels = list(line.strip() for line in f)
         if self.half_crop:
-            self.train = HalfCropDataset(train_images, train_labels,
-                                         shuffle=self.shuffle)
-            self.val = HalfCropDataset(val_images, val_labels,
-                                       shuffle=self.shuffle)
+            self.train = HalfCropDataset(train_images, train_labels, shuffle=self.shuffle)
+            self.val = HalfCropDataset(val_images, val_labels, shuffle=self.shuffle)
         else:
-            self.train = SegmentationDataset(train_images, train_labels,
-                                            shuffle=self.shuffle)
-            self.val = SegmentationDataset(val_images, val_labels,
-                                        shuffle=self.shuffle)
+            self.train = SegmentationDataset(train_images, train_labels, shuffle=self.shuffle)
+            self.val = SegmentationDataset(val_images, val_labels, shuffle=self.shuffle)
+
 
 @register_dataset('gta')
 class GTA(DatasetGroup):
@@ -81,13 +77,13 @@ class GTA(DatasetGroup):
 
     def _read_datasets(self):
         with open(self.get_path('train_image.txt'), 'r') as f:
-            train_images = list(self.get_path(line.strip()) for line in f)
+            train_images = list(line.strip() for line in f)
         with open(self.get_path('train_label.txt'), 'r') as f:
-            train_labels = list(self.get_path(line.strip()) for line in f)
+            train_labels = list(line.strip() for line in f)
         with open(self.get_path('val_image.txt'), 'r') as f:
-            val_images = list(self.get_path(line.strip()) for line in f)
+            val_images = list(line.strip() for line in f)
         with open(self.get_path('val_label.txt'), 'r') as f:
-            val_labels = list(self.get_path(line.strip()) for line in f)
+            val_labels = list(line.strip() for line in f)
 
         if self.half_crop:
             self.train = HalfCropDataset(train_images, train_labels, shuffle=self.shuffle)
@@ -98,7 +94,6 @@ class GTA(DatasetGroup):
 
 
 class HalfCropDataset(object):
-
     def __init__(self, images, labels, shuffle=True):
         self.images = images
         self.labels = labels
